@@ -1,21 +1,9 @@
 <?= '<'.'?'.'xml version="1.0" encoding="UTF-8"?>'."\n" ?>
 <?php if ($style != null) echo '<'.'?'.'xml-stylesheet href="'.$style.'" type="text/xsl"?>'."\n"; ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
 <?php foreach($items as $item) : ?>
   <url>
     <loc><?= $item['loc'] ?></loc>
-    <?php
-      if ($item['lastmod'] !== null) {
-        echo '<lastmod>' . date('Y-m-d\TH:i:sP', strtotime($item['lastmod'])) . '</lastmod>' . "\n";
-      }
-    ?>
-    <?php
-      if (!empty($item['alternates'])) {
-        foreach ($item['alternates'] as $alternate) {
-          echo '<xhtml:link rel="alternate" media="' . $alternate['media'] . '" href="' . $alternate['url'] . '" />' . "\n";
-        }
-      }
-    ?>
     <news:news>
       <news:publication>
         <news:name><?= $item['googlenews']['sitename'] ?></news:name>
@@ -37,10 +25,25 @@
   }
 
   if (isset($item['googlenews']['stock_tickers'])) {
-    echo "\t\t" . '<news:stock_tickers>' . implode(',', $item['googlenews']['stock_tickers']) . '</news:stock_tickers>' . "\n";
+    echo "\t\t" . '<news:stock_tickers>' . implode(',sds', $item['googlenews']['stock_tickers']) . '</news:stock_tickers>' . "\n";
   }
   ?>
     </news:news>
+    <?php
+
+    if (!empty($item['images'])) {
+      foreach($item['images'] as $image) {
+        echo "\t\t" . '<image:image>' . "\n";
+        echo "\t\t\t" . '<image:loc>' . $image['url'] . '</image:loc>' . "\n";
+        if (isset($image['title'])) echo "\t\t\t" . '<image:title>' . $image['title'] . '</image:title>' . "\n";
+        if (isset($image['caption'])) echo "\t\t\t" . '<image:caption>' . $image['caption'] . '</image:caption>' . "\n";
+        if (isset($image['geo_location'])) echo "\t\t\t" . '<image:geo_location>' . $image['geo_location'] . '</image:geo_location>' . "\n";
+        if (isset($image['license'])) echo "\t\t\t" . '<image:license>' . $image['license'] . '</image:license>' . "\n";
+        echo "\t\t" . '</image:image>' . "\n";
+      }
+    }
+
+  ?>
   </url>
 <?php endforeach; ?>
 </urlset>
